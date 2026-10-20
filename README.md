@@ -149,3 +149,6 @@ If you find this project helpful:
 - ⭐ Star the repository
 - 🍴 Fork it
 - Share feedback or open an issue
+
+## License
+This project is licensed under the [MIT License](LICENSE).
