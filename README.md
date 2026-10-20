@@ -1,88 +1,151 @@
-# Neural Network Computation Graph Visualizer
+# NeuralViz: Neural Network Computation Graph Visualizer
 
-A neural network computation graph visualizer built on top of a custom micrograd-style autograd engine, designed to make backpropagation and gradient flow intuitive and transparent.
+A neural network computation graph visualizer built on a custom, micrograd-style autograd engine. It makes backpropagation and gradient flow intuitive by showing what actually happens inside a network: **values flowing forward and gradients flowing backward.**
 
-This project helps you see what’s actually happening inside a neural network — values flowing forward and gradients flowing backward.
+![NeuralViz Demo](demo.gif)
 
-## 🎥 Demo
+---
 
-![Neural Network Visualizer Demo](demo.gif)
+## Table of Contents
+
+- [Motivation](#motivation)
+- [Features](#features)
+- [How It Works](#how-it-works)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+  - [Option 1: Docker (recommended)](#option-1-docker-recommended)
+  - [Option 2: Run manually](#option-2-run-manually)
+- [Usage](#usage)
+- [Roadmap](#roadmap)
+- [Credits](#credits)
+- [Contributing](#contributing)
+
+---
 
 ## Motivation
 
-Modern deep learning frameworks abstract away the fundamentals of automatic differentiation and backpropagation.
+Modern deep learning frameworks hide the fundamentals of automatic differentiation behind clean APIs. NeuralViz was built to:
 
-This project was built to:
-
-- Deeply understand how autograd works under the hood
-
+- Understand how autograd works under the hood
 - Visualize computation graphs instead of treating them as black boxes
+- Bridge the gap between the theory of backpropagation and a working implementation
 
-- Bridge the gap between theory and implementation
+It is useful for **learning, debugging, and teaching** neural networks.
 
-- The core autograd engine is inspired by the educational work of Andrej Karpathy, particularly his micrograd walkthroughs.
+## Features
 
-## What This Project Does
+- **Autograd engine from scratch**: a micrograd-style scalar value engine with reverse-mode automatic differentiation
+- **Computation graph construction**: the graph is built dynamically during the forward pass
+- **Backpropagation**: gradients computed via the chain rule over the graph
+- **Interactive visualization** of:
+  - Nodes (values and operations)
+  - Edges (dependencies between nodes)
+  - Forward values
+  - Backward gradients
+- **Automatic graph layout** for readable diagrams, even as the network grows
 
-- Builds a micrograd-style automatic differentiation engine from scratch
+## How It Works
 
-- Constructs a computation graph during forward passes
+1. **Forward pass:** each operation (`+`, `*`, activation, etc.) creates a new node that remembers its inputs, so a directed acyclic graph is built as the computation runs.
+2. **Backward pass:** starting from the output, the engine walks the graph in reverse topological order, applying the chain rule at each node to accumulate gradients.
+3. **Visualization:** the backend exposes the graph (nodes, edges, values, gradients), and the frontend renders and lays it out so you can inspect every step.
 
-- Computes gradients via reverse-mode autodiff
+## Tech Stack
 
-### Visualizes:
+| Layer | Technology |
+| --- | --- |
+| Autograd engine | Custom micrograd-style implementation (from scratch) |
+| Backend | Served on port `8000` (Dockerized) |
+| Frontend | [React Flow](https://reactflow.dev/) + [elkjs](https://github.com/kieler/elkjs), served by Vite on port `5173` |
+| Orchestration | Docker Compose |
 
-- Nodes (operations & values)
+## Project Structure
 
-- Edges (dependencies)
+```
+.
+├── backend/              # Autograd engine + API serving the computation graph
+├── frontend/             # React app: graph rendering and layout
+├── docker-compose.yml    # Runs backend and frontend together
+├── demo.gif              # Demo of the visualizer
+├── package.json
+└── README.md
+```
 
-- Forward values
+## Getting Started
 
-- Backward gradients
+### Prerequisites
 
-This makes it an excellent tool for learning, debugging, and teaching neural networks.
+- [Docker](https://www.docker.com/) and Docker Compose (for Option 1), **or**
+- [Node.js](https://nodejs.org/) 22+ and a recent Python 3 installation (for Option 2)
 
-## Tech Stack & Concepts
-### Core Concepts
+### Option 1: Docker (recommended)
 
-- Automatic Differentiation (Reverse Mode)
+```bash
+git clone https://github.com/NostalgicWinters/NeuralViz--Small-neural-network-visualizer.git
+cd NeuralViz--Small-neural-network-visualizer
 
-- Computation Graphs
+docker compose up --build
+```
 
-- Backpropagation
+Then open:
 
-- Chain Rule
+- **Frontend:** http://localhost:5173
+- **Backend:** http://localhost:8000
 
-- Neural Network Fundamentals
+### Option 2: Run manually
 
-### Tech Used
+**Backend**
 
-- Custom micrograd-style engine (from scratch)
+```bash
+cd backend
+# install the dependencies listed in the backend folder, then start the server on port 8000
+```
 
-- Graph layout & visualization logic
+**Frontend**
 
-- Frontend visualization (ReactFlow and elkjs)
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## Credits & Inspiration
+Open http://localhost:5173 in your browser.
 
-This project is heavily inspired by Andrej Karpathy’s educational content on neural networks and automatic differentiation.
+> Make sure the backend is running on port `8000` before using the frontend.
+
+## Usage
+
+1. Start the app (see above) and open the frontend in your browser.
+2. Run a forward pass to see the computation graph with each node's value.
+3. Run backpropagation to see gradients appear on every node.
+4. Pan, zoom, and inspect individual nodes to follow how values and gradients move through the network.
+
+## Roadmap
+
+Ideas for future improvements:
+
+- [ ] Support for larger networks and custom architectures
+- [ ] Step-by-step backprop animation
+- [ ] Training loop visualization (loss curve, weight updates)
+- [ ] Export graph as an image
+
+## Credits
+
+This project is heavily inspired by [Andrej Karpathy](https://karpathy.ai/)'s educational work on neural networks and automatic differentiation, particularly his [micrograd](https://github.com/karpathy/micrograd) walkthroughs.
 
 - The autograd engine follows the micrograd philosophy
+- All code was written independently for learning purposes
+- The visualization and extensions are original additions
 
-- All code is written independently for learning purposes
+If you haven't already, his work is highly recommended.
 
-- Visualization and extensions are original additions
+## Contributing
 
-If you haven’t already, I highly recommend checking out his work.
-
-## Support
+Contributions, issues, and feature requests are welcome. Feel free to open an issue or submit a pull request.
 
 If you find this project helpful:
 
 - ⭐ Star the repository
-
 - 🍴 Fork it
-
 - Share feedback or open an issue
-
-It helps a lot and motivates further improvements!
